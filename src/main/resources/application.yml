@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: haibara toys
+  #数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 1
+      maximum-pool-size: 8
+      idle-timeout: 180000
+      auto-commit: true
+      pool-name: HikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: select 1
+mybatis:
+  type-aliases-package: com.haibara.toys.test.mybatis.domain
+  mapper-locations: classpath:mapper/*.xml\
+# Mybatis 拦截sql插件
+tables:
+  includes:
+    - user
+  excludes:
+    - userlog
+  all-parse: true
+  auto-increment: true
+# SFTP 连接池
+sftp:
+  host: 127.0.0.1
+  port: 22
+  username: root
+  password: 123456
+  session:
+    StrictHostKeyChecking: no
+    kex: diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1,diffie-hellman-group-exchange-sha256
+  pool:
+    max-idle: 8
+    min-idle: 1
+    max-active: 16
+    max-wait: 150000
+    time-between-eviction-runs: 120000
+    test-on-borrow: true
