@@ -42,5 +42,7 @@ sftp:
     min-idle: 1
     max-active: 16
     max-wait: 150000
-    time-between-eviction-runs: 120000
     test-on-borrow: true
+    test-on-return: false
+    test-while-idle: true
+    time-between-eviction-runs: 120000

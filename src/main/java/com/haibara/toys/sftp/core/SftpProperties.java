@@ -9,50 +9,74 @@ import java.util.Map;
  */
 @Data
 public class SftpProperties {
+  /**
+   * 地址
+   */
   private String host = "localhost";
+  /**
+   * 端口号
+   */
   private int port = 22;
+  /**
+   * 用户名
+   */
   private String username;
+  /**
+   * 密码
+   */
   private String password;
+  /**
+   * Session 参数配置
+   */
   private Map<String, String> session;
+  /**
+   * 连接池配置
+   */
   private Pool pool;
 
+  /**
+   * 连接池配置类
+   */
   @Data
   public static class Pool {
     /**
-     * Maximum number of "idle" connections in the pool. Use a negative value to
-     * indicate an unlimited number of idle connections.
-     */
-    private int maxIdle = 8;
-
-    /**
-     * Target for the minimum number of idle connections to maintain in the pool. This
-     * setting only has an effect if both it and time between eviction runs are
-     * positive.
+     * 池中最小的连接数，只有当 timeBetweenEvictionRuns 为正时才有效
      */
     private int minIdle = 0;
 
     /**
-     * Maximum number of connections that can be allocated by the pool at a given
-     * time. Use a negative value for no limit.
+     * 池中最大的空闲连接数，为负值时表示无限
+     */
+    private int maxIdle = 8;
+
+    /**
+     * 池可以产生的最大对象数，为负值时表示无限
      */
     private int maxActive = 16;
 
     /**
-     * Maximum amount of time a connection allocation should block before throwing an
-     * exception when the pool is exhausted. Use a negative value to block
-     * indefinitely.
+     * 当池耗尽时，阻塞的最长时间，为负值时无限等待
      */
     private long maxWait = -1;
 
     /**
-     * Time between runs of the idle object evictor thread. When positive, the idle
-     * object evictor thread starts, otherwise no idle object eviction is performed.
-     */
-    private long timeBetweenEvictionRuns = 300000L;
-
-    /**
-     * test on borrowObject
+     * 从池中取出对象是是否检测可用
      */
     private boolean testOnBorrow = true;
+
+    /**
+     * 将对象返还给池时检测是否可用
+     */
+    private boolean testOnReturn = false;
+
+    /**
+     * 检查连接池对象是否可用
+     */
+    private boolean testWhileIdle = true;
+
+    /**
+     * 距离上次空闲线程检测完成多久后再次执行
+     */
+    private long timeBetweenEvictionRuns = 300000L;
   }
 }

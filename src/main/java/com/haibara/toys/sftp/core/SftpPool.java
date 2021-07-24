@@ -18,7 +18,16 @@ public class SftpPool implements ObjectPool<SftpClient> {
   private final GenericObjectPool<SftpClient> internalPool;
 
   public SftpPool(SftpProperties sftpProperties) {
-    this.internalPool = new GenericObjectPool<>(new SftpFactory(sftpProperties), getPoolConfig(sftpProperties.getPool()));
+    this.internalPool = new GenericObjectPool<SftpClient>(new SftpFactory(sftpProperties), getPoolConfig(sftpProperties.getPool())){
+      @Override
+      public void returnObject(SftpClient sftpClient) {
+        try {
+          sftpClient.getChannelSftp().cd(sftpClient.getOriginalDir());
+        } catch (Exception ignored) {
+        }
+        super.returnObject(sftpClient);
+      }
+    };
   }
 
   @Override
@@ -76,16 +85,7 @@ public class SftpPool implements ObjectPool<SftpClient> {
 
     @Override
     public PooledObject<SftpClient> wrap(SftpClient sftpClient) {
-      return new DefaultPooledObject<SftpClient>(sftpClient) {
-        @Override
-        public synchronized void markReturning() {
-          super.markReturning();
-          try {
-            sftpClient.getChannelSftp().cd(sftpClient.getOriginalDir());
-          } catch (Exception ignored) {
-          }
-        }
-      };
+      return new DefaultPooledObject<>(sftpClient);
     }
 
     @Override
@@ -105,12 +105,13 @@ public class SftpPool implements ObjectPool<SftpClient> {
       properties = new SftpProperties.Pool();
     }
     GenericObjectPoolConfig<SftpClient> config = new GenericObjectPoolConfig<>();
-    config.setMaxIdle(properties.getMaxIdle());
     config.setMinIdle(properties.getMinIdle());
+    config.setMaxIdle(properties.getMaxIdle());
     config.setMaxTotal(properties.getMaxActive());
     config.setMaxWaitMillis(properties.getMaxWait());
     config.setTestOnBorrow(properties.isTestOnBorrow());
-    config.setTestOnReturn(true);
+    config.setTestOnReturn(properties.isTestOnReturn());
+    config.setTestWhileIdle(properties.isTestWhileIdle());
     config.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRuns());
     return config;
   }
