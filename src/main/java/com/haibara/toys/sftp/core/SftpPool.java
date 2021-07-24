@@ -110,6 +110,7 @@ public class SftpPool implements ObjectPool<SftpClient> {
     config.setMaxTotal(properties.getMaxActive());
     config.setMaxWaitMillis(properties.getMaxWait());
     config.setTestOnBorrow(properties.isTestOnBorrow());
+    config.setTestOnReturn(true);
     config.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRuns());
     return config;
   }
